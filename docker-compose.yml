@@ -1,0 +1,31 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+    # Only mount if you need live code changes
+    volumes:
+      - ./src:/app:cached
+    working_dir: /app/lv360_training.Api
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+    command: ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:8080"]
+
+  db:
+    image: mysql:8.0
+    container_name: lv360_training_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: lv360_training
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:

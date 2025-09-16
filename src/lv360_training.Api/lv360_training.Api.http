@@ -1,0 +1,6 @@
+@lv360_training.Api_HostAddress = http://localhost:5248
+
+GET {{lv360_training.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
