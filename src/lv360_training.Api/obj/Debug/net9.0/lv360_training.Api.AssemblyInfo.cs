@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("lv360_training.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4b270785a69b6db1a85520d07e4aab078c084d6a")]
 [assembly: System.Reflection.AssemblyProductAttribute("lv360_training.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("lv360_training.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

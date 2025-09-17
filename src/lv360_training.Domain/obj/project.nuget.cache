@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Ykzo+Xs3AEM=",
+  "dgSpecHash": "DgdO8C9i5co=",
   "success": true,
-  "projectFilePath": "C:\\Users\\PC\\Documents\\lv360_training\\src\\lv360_training.Domain\\lv360_training.Domain.csproj",
+  "projectFilePath": "/app/lv360_training.Domain/lv360_training.Domain.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

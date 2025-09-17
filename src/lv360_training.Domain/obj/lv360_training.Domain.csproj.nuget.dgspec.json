@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\PC\\Documents\\lv360_training\\src\\lv360_training.Domain\\lv360_training.Domain.csproj": {}
+    "/app/lv360_training.Domain/lv360_training.Domain.csproj": {}
   },
   "projects": {
-    "C:\\Users\\PC\\Documents\\lv360_training\\src\\lv360_training.Domain\\lv360_training.Domain.csproj": {
+    "/app/lv360_training.Domain/lv360_training.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\PC\\Documents\\lv360_training\\src\\lv360_training.Domain\\lv360_training.Domain.csproj",
+        "projectUniqueName": "/app/lv360_training.Domain/lv360_training.Domain.csproj",
         "projectName": "lv360_training.Domain",
-        "projectPath": "C:\\Users\\PC\\Documents\\lv360_training\\src\\lv360_training.Domain\\lv360_training.Domain.csproj",
-        "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\PC\\Documents\\lv360_training\\src\\lv360_training.Domain\\obj\\",
+        "projectPath": "/app/lv360_training.Domain/lv360_training.Domain.csproj",
+        "packagesPath": "/root/.nuget/packages/",
+        "outputPath": "/app/lv360_training.Domain/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/root/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -59,7 +59,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -7,13 +7,14 @@ services:
       - "5000:8080"
     # Only mount if you need live code changes
     volumes:
-      - ./src:/app:cached
+      - ./src:/app
+      - api_obj:/app/lv360_training.Api/obj
+      - api_bin:/app/lv360_training.Api/bin
     working_dir: /app/lv360_training.Api
     environment:
       - DOTNET_USE_POLLING_FILE_WATCHER=1
       - DOTNET_RUNNING_IN_CONTAINER=true
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-    command: ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:8080"]
 
   db:
     image: mysql:8.0
@@ -29,3 +30,5 @@ services:
 
 volumes:
   db_data:
+  api_obj:
+  api_bin:
