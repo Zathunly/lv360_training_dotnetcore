@@ -1,7 +1,10 @@
 using lv360_training.Application.Handlers;
-using lv360_training.Application.Interfaces;
+using lv360_training.Application.Interfaces.Repositories.Auth;
+using lv360_training.Application.Interfaces.Repositories.Core;
+using lv360_training.Application.Interfaces.Security;
 using lv360_training.Infrastructure.Db;
-using lv360_training.Infrastructure.Auth;
+using lv360_training.Infrastructure.Repositories.Core;
+using lv360_training.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
@@ -19,16 +22,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/api/auth/login";     // redirect path if not authenticated
+        options.LoginPath = "/api/auth/login";     
         options.LogoutPath = "/api/auth/logout";
         options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // HTTPS only
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always; 
         options.ExpireTimeSpan = TimeSpan.FromHours(1);
         options.SlidingExpiration = true;
     });
 
 // --- Add session ---
-builder.Services.AddDistributedMemoryCache(); // <-- required for session
+builder.Services.AddDistributedMemoryCache(); 
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromHours(1);
@@ -38,11 +41,13 @@ builder.Services.AddSession(options =>
 
 
 // --- Register Infrastructure services ---
-builder.Services.AddScoped<IDbService, DbService>();
-
-// --- Register Auth services ---
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();   
+builder.Services.AddScoped<ISessionRepository, SessionRepository>();
+builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
+builder.Services.AddScoped<IPasswordService, PasswordService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // --- Register Application handlers ---
 builder.Services.AddScoped<AuthHandler>();

@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/lv360_training.Api.props" />
-</Project>

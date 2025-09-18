@@ -1,78 +1,91 @@
 using lv360_training.Api.Dtos.Auth;
-using lv360_training.Application.Interfaces;
+using lv360_training.Application.Interfaces.Repositories.Core;
+using lv360_training.Application.Interfaces.Repositories.Auth;
+using lv360_training.Application.Interfaces.Security;
 using lv360_training.Domain;
-using System.Security.Claims; 
+using System.Security.Claims;
 
 namespace lv360_training.Application.Handlers;
 
 public class AuthHandler
 {
-    private readonly IDbService _db;
-    private readonly IAuthService _auth;
+    private readonly IUserRepository _users;
+    private readonly IRoleRepository _roles;
+    private readonly IUserRoleRepository _userRoles;
+    private readonly ISessionRepository _sessions;
+    private readonly IUnitOfWork _uow;
+    private readonly IPasswordService _hasher;
 
-    public AuthHandler(IDbService db, IAuthService auth)
+    public AuthHandler(
+        IUserRepository users,
+        IRoleRepository roles,
+        IUserRoleRepository userRoles,
+        ISessionRepository sessions,
+        IUnitOfWork uow,
+        IPasswordService hasher)
     {
-        _db = db;
-        _auth = auth;
+        _users = users;
+        _roles = roles;
+        _userRoles = userRoles;
+        _sessions = sessions;
+        _uow = uow;
+        _hasher = hasher;
     }
 
     public async Task<int> Register(RegisterRequest request, string roleName)
     {
-        var existing = await _db.GetUserByUsernameAsync(request.Username);
-        if (existing != null)
+        // Ensure username is unique
+        if (await _users.GetByUsernameAsync(request.Username) != null)
             throw new Exception("Username already exists");
 
+        // Create user
         var user = new User
         {
             Username = request.Username,
-            Password = _auth.HashPassword(request.Password)
+            Password = _hasher.HashPassword(request.Password)
         };
 
-        await _db.AddUserAsync(user);
-        await _db.SaveChangesAsync();
+        await _users.AddAsync(user);
+        await _uow.SaveChangesAsync();
 
-        var role = await _db.GetRoleByNameAsync(roleName);
-        if (role != null)
+        // Assign role
+        var role = await _roles.GetByNameAsync(roleName);
+        if (role == null)
+            throw new Exception($"Role '{roleName}' not found");
+
+        await _userRoles.AddAsync(new UserRole
         {
-            var userRole = new UserRole
-            {
-                UserId = user.Id,
-                RoleId = role.Id
-            };
-            await _db.AddUserRoleAsync(userRole);
-            await _db.SaveChangesAsync();
-        }
+            UserId = user.Id,
+            RoleId = role.Id
+        });
+        await _uow.SaveChangesAsync();
 
         return user.Id;
     }
 
     public async Task<User?> ValidateUserAsync(LoginRequest request)
     {
-        // Include roles when fetching the user
-        var user = await _db.GetUserByUsernameAsync(request.Username);
+        var user = await _users.GetByUsernameAsync(request.Username);
 
-        if (user == null || !_auth.VerifyPassword(request.Password, user.Password))
+        if (user == null)
             return null;
 
-        // Eagerly load roles if not already loaded
-        if (user.UserRoles == null || !user.UserRoles.Any())
-        {
-            var dbUser = await _db.GetUserByUsernameAsync(request.Username);
-            user.UserRoles = dbUser?.UserRoles ?? new List<UserRole>();
-        }
-
-        return user;
+        return _hasher.VerifyPassword(request.Password, user.Password)
+            ? user
+            : null;
     }
 
-    public async Task<bool> ValidateSessionAsync(ClaimsPrincipal user)
+    public async Task<bool> ValidateSessionAsync(ClaimsPrincipal principal)
     {
-        var sessionIdClaim = user.Claims.FirstOrDefault(c => c.Type == "SessionId")?.Value;
+        var sessionIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "SessionId")?.Value;
         if (sessionIdClaim == null || !Guid.TryParse(sessionIdClaim, out var sessionId))
             return false;
 
-        var session = await _db.GetSessionByIdAsync(sessionId);
-        return session != null && session.ExpiresAt > DateTime.UtcNow;
+        var session = await _sessions.GetByIdAsync(sessionId);
+
+        return session is { ExpiresAt: var exp } && exp > DateTime.UtcNow;
     }
+
 
     public async Task<Session> CreateSessionAsync(User user)
     {
@@ -83,22 +96,22 @@ public class AuthHandler
             CreatedAt = DateTime.UtcNow
         };
 
-        await _db.AddSession(session);
-        await _db.SaveChangesAsync();
+        await _sessions.AddAsync(session);
+        await _uow.SaveChangesAsync();
 
         return session;
     }
 
-    public async Task LogoutUserAsync(ClaimsPrincipal user)
+
+    public async Task LogoutUserAsync(ClaimsPrincipal principal)
     {
-        var sessionIdClaim = user.Claims.FirstOrDefault(c => c.Type == "SessionId")?.Value;
+        var sessionIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "SessionId")?.Value;
         if (sessionIdClaim == null) return;
 
         if (Guid.TryParse(sessionIdClaim, out var sessionId))
         {
-            await _db.DeleteSessionAsync(sessionId);
-            await _db.SaveChangesAsync();
+            await _sessions.DeleteAsync(sessionId);
+            await _uow.SaveChangesAsync();
         }
     }
-
 }

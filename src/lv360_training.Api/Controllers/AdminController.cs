@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/admin")]
-// [Authorize(Roles = "Admin")] 
+[Authorize(Roles = "Admin")] 
 public class AdminController : ControllerBase
 {
     private readonly AdminHandler _handler;

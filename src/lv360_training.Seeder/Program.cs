@@ -11,14 +11,13 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        if (args.Length != 3 || args[0] != "--admin")
+        if (args.Length == 0)
         {
-            Console.WriteLine("Usage: Seeder --admin <username> <password>");
+            Console.WriteLine("Usage:");
+            Console.WriteLine("  Seeder --role");
+            Console.WriteLine("  Seeder --admin <username> <password>");
             return;
         }
-
-        var username = args[1];
-        var password = args[2];
 
         // --- Setup DI ---
         var services = new ServiceCollection();
@@ -34,31 +33,53 @@ class Program
         services.AddScoped<IAuthService, AuthService>();
 
         var provider = services.BuildServiceProvider();
-
         var db = provider.GetRequiredService<IDbService>();
         var auth = provider.GetRequiredService<IAuthService>();
+        var context = provider.GetRequiredService<AppDbContext>();
 
-        // --- Check if user exists ---
-        var existing = await db.GetUserByUsernameAsync(username);
-        if (existing != null)
+        // --- Handle --role ---
+        if (args[0] == "--role")
         {
-            Console.WriteLine($"User '{username}' already exists.");
+            await EnsureRoleExists(db, context, "Admin");
+            await EnsureRoleExists(db, context, "User");
+            Console.WriteLine("Roles 'Admin' and 'User' ensured.");
             return;
         }
 
-        // --- Create admin user ---
-        var user = new User
+        // --- Handle --admin ---
+        if (args[0] == "--admin")
         {
-            Username = username,
-            Password = auth.HashPassword(password)
-        };
-        await db.AddUserAsync(user);
-        await db.SaveChangesAsync();
+            if (args.Length != 3)
+            {
+                Console.WriteLine("Usage: Seeder --admin <username> <password>");
+                return;
+            }
 
-        // --- Assign Admin role ---
-        var adminRole = await db.GetRoleByNameAsync("Admin");
-        if (adminRole != null)
-        {
+            var username = args[1];
+            var password = args[2];
+
+            // Ensure roles exist first
+            var adminRole = await EnsureRoleExists(db, context, "Admin");
+            await EnsureRoleExists(db, context, "User");
+
+            // Check if user exists
+            var existing = await db.GetUserByUsernameAsync(username);
+            if (existing != null)
+            {
+                Console.WriteLine($"⚠️ User '{username}' already exists.");
+                return;
+            }
+
+            // Create admin user
+            var user = new User
+            {
+                Username = username,
+                Password = auth.HashPassword(password)
+            };
+            await db.AddUserAsync(user);
+            await db.SaveChangesAsync();
+
+            // Assign Admin role
             var userRole = new UserRole
             {
                 UserId = user.Id,
@@ -66,8 +87,20 @@ class Program
             };
             await db.AddUserRoleAsync(userRole);
             await db.SaveChangesAsync();
-        }
 
-        Console.WriteLine($"Admin user '{username}' created successfully.");
+            Console.WriteLine($"Admin user '{username}' created successfully.");
+        }
+    }
+
+    private static async Task<Role> EnsureRoleExists(IDbService db, AppDbContext context, string roleName)
+    {
+        var role = await db.GetRoleByNameAsync(roleName);
+        if (role == null)
+        {
+            role = new Role { Name = roleName };
+            context.Roles.Add(role);
+            await context.SaveChangesAsync();
+        }
+        return role;
     }
 }

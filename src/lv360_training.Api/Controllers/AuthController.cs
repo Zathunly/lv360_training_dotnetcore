@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using lv360_training.Application.Handlers;
 using lv360_training.Api.Dtos.Auth;
 using lv360_training.Application.Enums;
+using lv360_training.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Security.Claims;
 
 namespace lv360_training.Api.Controllers;
 
@@ -43,26 +43,13 @@ public class AuthController : ControllerBase
         // --- Create DB session ---
         var session = await _authHandler.CreateSessionAsync(user);
 
-        // --- Load user roles from database ---
-        var roles = user.UserRoles?.Select(ur => ur.Role.Name).ToList() ?? new List<string>();
+        // --- Create ClaimsPrincipal using helper ---
+        var principal = ClaimsHelper.CreateClaimsPrincipal(user, session);
 
-        // --- Create claims ---
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim("SessionId", session.Id.ToString())
-        };
-
-        // Add a claim for each role
-        foreach (var role in roles)
-            claims.Add(new Claim(ClaimTypes.Role, role));
-
-        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
+        // --- Sign in ---
         await HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(claimsIdentity),
+            principal,
             new AuthenticationProperties
             {
                 IsPersistent = true,
@@ -70,6 +57,8 @@ public class AuthController : ControllerBase
             }
         );
 
+        // --- Return response ---
+        var roles = user.UserRoles?.Select(ur => ur.Role.Name).ToList() ?? new List<string>();
         return Ok(new 
         { 
             message = "Successfully Logged In", 
@@ -78,7 +67,6 @@ public class AuthController : ControllerBase
             expiresAt = session.ExpiresAt 
         });
     }
-
 
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
