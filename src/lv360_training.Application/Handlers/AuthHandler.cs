@@ -2,7 +2,7 @@ using lv360_training.Api.Dtos.Auth;
 using lv360_training.Domain.Interfaces.Repositories.Core;
 using lv360_training.Domain.Interfaces.Repositories.Auth;
 using lv360_training.Domain.Interfaces.Security;
-using lv360_training.Domain;
+using lv360_training.Domain.Entities;
 using System.Security.Claims;
 
 namespace lv360_training.Application.Handlers;

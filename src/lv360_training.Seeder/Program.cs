@@ -1,7 +1,7 @@
-﻿using lv360_training.Infrastructure.Db;
-using lv360_training.Application.Interfaces;
-using lv360_training.Domain;
-using lv360_training.Infrastructure.Auth;
+﻿using lv360_training.Infrastructure.Persistence;
+using lv360_training.Domain.Entities;
+using lv360_training.Domain.Interfaces.Security;
+using lv360_training.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -29,19 +29,17 @@ class Program
             )
         );
 
-        services.AddScoped<IDbService, DbService>();
-        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IPasswordService, PasswordService>();
 
         var provider = services.BuildServiceProvider();
-        var db = provider.GetRequiredService<IDbService>();
-        var auth = provider.GetRequiredService<IAuthService>();
         var context = provider.GetRequiredService<AppDbContext>();
+        var auth = provider.GetRequiredService<IPasswordService>();
 
         // --- Handle --role ---
         if (args[0] == "--role")
         {
-            await EnsureRoleExists(db, context, "Admin");
-            await EnsureRoleExists(db, context, "User");
+            await EnsureRoleExists(context, "Admin");
+            await EnsureRoleExists(context, "User");
             Console.WriteLine("Roles 'Admin' and 'User' ensured.");
             return;
         }
@@ -58,13 +56,12 @@ class Program
             var username = args[1];
             var password = args[2];
 
-            // Ensure roles exist first
-            var adminRole = await EnsureRoleExists(db, context, "Admin");
-            await EnsureRoleExists(db, context, "User");
+            await EnsureRoleExists(context, "Admin");
+            await EnsureRoleExists(context, "User");
 
             // Check if user exists
-            var existing = await db.GetUserByUsernameAsync(username);
-            if (existing != null)
+            var existingUser = await context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if (existingUser != null)
             {
                 Console.WriteLine($"⚠️ User '{username}' already exists.");
                 return;
@@ -76,31 +73,33 @@ class Program
                 Username = username,
                 Password = auth.HashPassword(password)
             };
-            await db.AddUserAsync(user);
-            await db.SaveChangesAsync();
 
-            // Assign Admin role
-            var userRole = new UserRole
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            var adminRole = await context.Roles.FirstOrDefaultAsync(r => r.Name == "Admin");
+            if (adminRole != null)
             {
-                UserId = user.Id,
-                RoleId = adminRole.Id
-            };
-            await db.AddUserRoleAsync(userRole);
-            await db.SaveChangesAsync();
+                context.UserRoles.Add(new UserRole
+                {
+                    UserId = user.Id,
+                    RoleId = adminRole.Id
+                });
+                await context.SaveChangesAsync();
+            }
 
             Console.WriteLine($"Admin user '{username}' created successfully.");
         }
     }
 
-    private static async Task<Role> EnsureRoleExists(IDbService db, AppDbContext context, string roleName)
+    private static async Task EnsureRoleExists(AppDbContext context, string roleName)
     {
-        var role = await db.GetRoleByNameAsync(roleName);
+        var role = await context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
         if (role == null)
         {
             role = new Role { Name = roleName };
             context.Roles.Add(role);
             await context.SaveChangesAsync();
         }
-        return role;
     }
 }

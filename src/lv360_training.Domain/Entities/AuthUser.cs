@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace lv360_training.Domain;
+namespace lv360_training.Domain.Entities;
 
 public class User
 {
@@ -14,8 +13,11 @@ public class User
     public string? Email { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    // Relations
     public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     public ICollection<Session> Sessions { get; set; } = new List<Session>();
+
+    public ICollection<Order> Orders { get; set; } = new List<Order>();
 }
 
 public class Role

@@ -1,15 +1,15 @@
 using lv360_training.Domain.Interfaces.Repositories.Catalog;
 using lv360_training.Domain.Interfaces.Repositories.Core;
-using lv360_training.Domain;
+using lv360_training.Domain.Entities;
 
 namespace lv360_training.Application.Handlers;
 
 public class ProductHandler
 {
-    private readonly IProductRepository _productRepository;
+    private readonly ICatalogRepository<Product> _productRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ProductHandler(IProductRepository productRepository, IUnitOfWork unitOfWork)
+    public ProductHandler(ICatalogRepository<Product> productRepository, IUnitOfWork unitOfWork)
     {
         _productRepository = productRepository;
         _unitOfWork = unitOfWork;

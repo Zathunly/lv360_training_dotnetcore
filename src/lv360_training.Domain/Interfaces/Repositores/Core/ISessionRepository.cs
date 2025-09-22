@@ -1,3 +1,5 @@
+using lv360_training.Domain.Entities;
+
 namespace lv360_training.Domain.Interfaces.Repositories.Core;
 
 public interface ISessionRepository

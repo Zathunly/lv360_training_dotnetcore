@@ -1,5 +1,5 @@
 using lv360_training.Domain.Interfaces.Repositories.Auth;
-using lv360_training.Domain;
+using lv360_training.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using lv360_training.Infrastructure.Persistence;
 

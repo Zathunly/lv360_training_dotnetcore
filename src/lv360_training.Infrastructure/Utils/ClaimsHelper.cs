@@ -1,4 +1,4 @@
-using lv360_training.Domain;
+using lv360_training.Domain.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 

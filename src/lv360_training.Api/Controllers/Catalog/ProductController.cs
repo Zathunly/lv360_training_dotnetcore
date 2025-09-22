@@ -1,9 +1,10 @@
 using lv360_training.Application.Handlers;
-using lv360_training.Domain;
+using lv360_training.Application.Dtos.Catalog;
+using lv360_training.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace lv360_training.Api.Controllers;
+namespace lv360_training.Api.Controllers.Catalog;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -36,11 +37,21 @@ public class ProductController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Create(Product product)
+    public async Task<IActionResult> Create(CreateProductDto dto)
     {
+        var product = new Product
+        {
+            Name = dto.Name,
+            Description = dto.Description,
+            Price = dto.Price,
+            CategoryId = dto.CategoryId
+        };
+
         var created = await _productHandler.CreateAsync(product);
+
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
+
 
     [HttpPut("{id:int}")]
     [Authorize(Roles = "Admin")]

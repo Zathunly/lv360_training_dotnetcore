@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using lv360_training.Domain;
+using lv360_training.Domain.Entities;
 
 namespace lv360_training.Infrastructure.Persistence;
 
@@ -16,6 +16,12 @@ public class AppDbContext : DbContext
     public DbSet<Session> Sessions => Set<Session>();
 
     public DbSet<Product> Products => Set<Product>();
+    public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+
+    public DbSet<Warehouse> Warehouses => Set<Warehouse>();
+    public DbSet<Stock> Stocks => Set<Stock>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -56,7 +62,41 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Product>(entity =>
         {
             entity.Property(p => p.Price)
-                .HasColumnType("decimal(65,30)"); // precision & scale
+                .HasColumnType("decimal(18,2)"); 
         });
+
+        modelBuilder.Entity<Category>()
+            .HasMany(c => c.Products)
+            .WithOne()
+            .HasForeignKey(p => p.CategoryId);
+
+        modelBuilder.Entity<Order>()
+            .HasOne(o => o.User)
+            .WithMany(u => u.Orders)
+            .HasForeignKey(o => o.UserId);
+
+        modelBuilder.Entity<Order>()
+            .HasMany(o => o.OrderItems)
+            .WithOne(oi => oi.Order)
+            .HasForeignKey(oi => oi.OrderId);
+
+        modelBuilder.Entity<OrderItem>()
+            .HasOne(oi => oi.Product)
+            .WithMany()
+            .HasForeignKey(oi => oi.ProductId);
+
+        modelBuilder.Entity<Stock>()
+            .HasOne(s => s.Product)
+            .WithMany()
+            .HasForeignKey(s => s.ProductId);
+
+        modelBuilder.Entity<Stock>()
+            .HasOne(s => s.Warehouse)
+            .WithMany(w => w.Stocks)
+            .HasForeignKey(s => s.WarehouseId);
+
+        modelBuilder.Entity<Product>()
+            .Property(p => p.Price)
+            .HasColumnType("decimal(18,2)");
     }
 }

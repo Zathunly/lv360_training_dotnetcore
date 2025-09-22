@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+namespace lv360_training.Api.Controllers.Auth;
+
 [ApiController]
 [Route("api/admin")]
 [Authorize(Roles = "Admin")] 

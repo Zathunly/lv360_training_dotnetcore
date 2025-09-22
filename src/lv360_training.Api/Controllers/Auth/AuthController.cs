@@ -6,7 +6,7 @@ using lv360_training.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
-namespace lv360_training.Api.Controllers;
+namespace lv360_training.Api.Controllers.Auth;
 
 [ApiController]
 [Route("api/auth")]

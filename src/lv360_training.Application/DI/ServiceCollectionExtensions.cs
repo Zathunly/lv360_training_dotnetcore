@@ -9,7 +9,10 @@ namespace lv360_training.Application
         {
             services.AddScoped<AuthHandler>();
             services.AddScoped<AdminHandler>();
+            services.AddScoped<CategoryHandler>();
             services.AddScoped<ProductHandler>();
+            services.AddScoped<StockHandler>();
+
 
             return services;
         }

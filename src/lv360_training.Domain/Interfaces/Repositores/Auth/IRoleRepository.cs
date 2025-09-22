@@ -1,3 +1,5 @@
+using lv360_training.Domain.Entities;
+
 namespace lv360_training.Domain.Interfaces.Repositories.Auth;
 
 public interface IRoleRepository
