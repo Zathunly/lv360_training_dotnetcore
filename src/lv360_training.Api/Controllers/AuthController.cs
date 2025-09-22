@@ -63,7 +63,6 @@ public class AuthController : ControllerBase
         { 
             message = "Successfully Logged In", 
             username = user.Username, 
-            roles = roles,
             expiresAt = session.ExpiresAt 
         });
     }
@@ -71,7 +70,7 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
-        await _authHandler.LogoutUserAsync(User); // ClaimsPrincipal comes from ControllerBase.User
+        await _authHandler.LogoutUserAsync(User); 
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return Ok(new { message = "Successfully Logged Out" });
     }

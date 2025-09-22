@@ -1,10 +1,7 @@
 using lv360_training.Application.Handlers;
-using lv360_training.Application.Interfaces.Repositories.Auth;
-using lv360_training.Application.Interfaces.Repositories.Core;
-using lv360_training.Application.Interfaces.Security;
-using lv360_training.Infrastructure.Db;
-using lv360_training.Infrastructure.Repositories.Core;
-using lv360_training.Infrastructure.Security;
+using lv360_training.Application;
+using lv360_training.Infrastructure;
+using lv360_training.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
@@ -40,18 +37,9 @@ builder.Services.AddSession(options =>
 });
 
 
-// --- Register Infrastructure services ---
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IRoleRepository, RoleRepository>();
-builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();   
-builder.Services.AddScoped<ISessionRepository, SessionRepository>();
-builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
-builder.Services.AddScoped<IPasswordService, PasswordService>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-// --- Register Application handlers ---
-builder.Services.AddScoped<AuthHandler>();
-builder.Services.AddScoped<AdminHandler>();
+// --- Register Services per Layer ---
+builder.Services.AddInfrastructureServices();
+builder.Services.AddApplicationServices();
 
 // --- Add Controllers ---
 builder.Services.AddControllers();

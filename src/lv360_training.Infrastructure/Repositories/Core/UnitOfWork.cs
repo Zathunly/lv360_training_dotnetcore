@@ -1,5 +1,5 @@
-using lv360_training.Infrastructure.Db;
-using lv360_training.Application.Interfaces.Repositories.Core;
+using lv360_training.Infrastructure.Persistence;
+using lv360_training.Domain.Interfaces.Repositories.Core;
 
 namespace lv360_training.Infrastructure.Repositories.Core;
 

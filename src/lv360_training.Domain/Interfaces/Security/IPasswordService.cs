@@ -1,4 +1,4 @@
-namespace lv360_training.Application.Interfaces.Security;
+namespace lv360_training.Domain.Interfaces.Security;
 
 public interface IPasswordService
 {

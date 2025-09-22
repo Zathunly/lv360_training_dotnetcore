@@ -2,8 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\lv360_training.Application\lv360_training.Application.csproj" />
-    <ProjectReference Include="..\lv360_training.Infrastructure\lv360_training.Infrastructure.csproj" />
-    <ProjectReference Include="..\lv360_training.Domain\lv360_training.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

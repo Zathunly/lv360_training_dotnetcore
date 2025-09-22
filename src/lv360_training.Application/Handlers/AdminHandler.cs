@@ -1,5 +1,5 @@
-using lv360_training.Application.Interfaces.Repositories.Core;
-using lv360_training.Application.Interfaces.Repositories.Auth;
+using lv360_training.Domain.Interfaces.Repositories.Core;
+using lv360_training.Domain.Interfaces.Repositories.Auth;
 using lv360_training.Domain;
 
 public class AdminHandler

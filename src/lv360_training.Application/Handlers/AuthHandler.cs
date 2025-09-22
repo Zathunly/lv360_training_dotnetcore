@@ -1,7 +1,7 @@
 using lv360_training.Api.Dtos.Auth;
-using lv360_training.Application.Interfaces.Repositories.Core;
-using lv360_training.Application.Interfaces.Repositories.Auth;
-using lv360_training.Application.Interfaces.Security;
+using lv360_training.Domain.Interfaces.Repositories.Core;
+using lv360_training.Domain.Interfaces.Repositories.Auth;
+using lv360_training.Domain.Interfaces.Security;
 using lv360_training.Domain;
 using System.Security.Claims;
 
@@ -86,7 +86,6 @@ public class AuthHandler
         return session is { ExpiresAt: var exp } && exp > DateTime.UtcNow;
     }
 
-
     public async Task<Session> CreateSessionAsync(User user)
     {
         var session = new Session
@@ -101,7 +100,6 @@ public class AuthHandler
 
         return session;
     }
-
 
     public async Task LogoutUserAsync(ClaimsPrincipal principal)
     {

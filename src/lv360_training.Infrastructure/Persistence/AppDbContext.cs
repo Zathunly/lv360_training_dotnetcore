@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using lv360_training.Domain;
 
-namespace lv360_training.Infrastructure.Db;
+namespace lv360_training.Infrastructure.Persistence;
 
 public class AppDbContext : DbContext
 {
@@ -52,5 +52,11 @@ public class AppDbContext : DbContext
             .HasOne(s => s.User)
             .WithMany(u => u.Sessions)
             .HasForeignKey(s => s.UserId);
+
+        modelBuilder.Entity<Product>(entity =>
+        {
+            entity.Property(p => p.Price)
+                .HasColumnType("decimal(65,30)"); // precision & scale
+        });
     }
 }

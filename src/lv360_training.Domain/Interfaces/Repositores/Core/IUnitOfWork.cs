@@ -1,4 +1,4 @@
-namespace lv360_training.Application.Interfaces.Repositories.Core;
+namespace lv360_training.Domain.Interfaces.Repositories.Core;
 
 public interface IUnitOfWork
 {

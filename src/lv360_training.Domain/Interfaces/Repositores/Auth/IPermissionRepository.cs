@@ -1,6 +1,4 @@
-using lv360_training.Domain;
-
-namespace lv360_training.Application.Interfaces.Repositories.Auth;
+namespace lv360_training.Domain.Interfaces.Repositories.Auth;
 
 public interface IPermissionRepository
 {

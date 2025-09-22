@@ -1,8 +1,10 @@
-using lv360_training.Application.Interfaces.Repositories.Auth;
+using lv360_training.Domain.Interfaces.Repositories.Auth;
 using lv360_training.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace lv360_training.Infrastructure.Db;
+using lv360_training.Infrastructure.Persistence;
+
+namespace lv360_training.Infrastructure.Repositories.Auth;
 
 public class UserRoleRepository : IUserRoleRepository
 {

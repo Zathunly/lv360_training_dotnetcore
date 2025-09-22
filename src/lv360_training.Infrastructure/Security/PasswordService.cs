@@ -1,4 +1,4 @@
-using lv360_training.Application.Interfaces.Security;
+using lv360_training.Domain.Interfaces.Security;
 using System.Security.Cryptography;
 using System.Text;
 
