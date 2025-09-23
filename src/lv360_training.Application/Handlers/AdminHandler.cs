@@ -1,6 +1,7 @@
 using lv360_training.Domain.Interfaces.Repositories.Core;
 using lv360_training.Domain.Interfaces.Repositories.Auth;
 using lv360_training.Domain.Entities;
+using lv360_training.Application.Dtos.Auth.Request;
 
 public class AdminHandler
 {

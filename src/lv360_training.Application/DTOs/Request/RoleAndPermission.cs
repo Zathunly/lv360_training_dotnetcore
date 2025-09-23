@@ -1,4 +1,6 @@
 // AssignRoleRequest.cs
+namespace lv360_training.Application.Dtos.Auth.Request;
+
 public class AssignRoleRequest
 {
     public string Username { get; set; } = null!;

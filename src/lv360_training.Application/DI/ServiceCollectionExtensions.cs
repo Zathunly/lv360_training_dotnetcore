@@ -12,8 +12,8 @@ namespace lv360_training.Application
             services.AddScoped<CategoryHandler>();
             services.AddScoped<ProductHandler>();
             services.AddScoped<StockHandler>();
-
-
+            services.AddScoped<WarehouseHandler>();
+            services.AddScoped<OrderHandler>();
             return services;
         }
     }

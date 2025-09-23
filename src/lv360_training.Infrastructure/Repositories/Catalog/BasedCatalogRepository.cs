@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace lv360_training.Infrastructure.Repositories.Catalog;
 
-public class CatalogRepository<T> : ICatalogRepository<T> where T : class
+public class BasedCatalogRepository<T> : IBasedCatalogRepository<T> where T : class
 {
     private readonly AppDbContext _context;
 
-    public CatalogRepository(AppDbContext context)
+    public BasedCatalogRepository(AppDbContext context)
     {
         _context = context;
     }

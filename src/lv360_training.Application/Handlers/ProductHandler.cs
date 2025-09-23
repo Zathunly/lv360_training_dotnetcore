@@ -6,10 +6,10 @@ namespace lv360_training.Application.Handlers;
 
 public class ProductHandler
 {
-    private readonly ICatalogRepository<Product> _productRepository;
+    private readonly IBasedCatalogRepository<Product> _productRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ProductHandler(ICatalogRepository<Product> productRepository, IUnitOfWork unitOfWork)
+    public ProductHandler(IBasedCatalogRepository<Product> productRepository, IUnitOfWork unitOfWork)
     {
         _productRepository = productRepository;
         _unitOfWork = unitOfWork;

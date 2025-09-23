@@ -1,8 +1,8 @@
 using lv360_training.Application.Handlers;
 using lv360_training.Domain.Entities;
+using lv360_training.Application.Dtos.Catalog.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using lv360_training.Application.Dtos.Catalog;
 
 namespace lv360_training.Api.Controllers.Catalog;
 
@@ -37,8 +37,9 @@ public class StockController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Create([FromBody] CreateStockDto dto)
+    public async Task<IActionResult> Create(CreateOrUpdateStockDto dto)
     {
+        // Convert DTO to Stock entity
         var stock = new Stock
         {
             ProductId = dto.ProductId,
@@ -48,18 +49,23 @@ public class StockController : ControllerBase
         };
 
         var created = await _stockHandler.CreateAsync(stock);
-
-        return CreatedAtAction(nameof(GetById), new { id = stock.Id }, stock);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
 
     [HttpPut("{id:int}")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Update(int id, Stock stock)
+    public async Task<IActionResult> Update(int id, CreateOrUpdateStockDto dto)
     {
-        if (id != stock.Id) return BadRequest("ID mismatch");
+        var stockToUpdate = new Stock
+        {
+            ProductId = dto.ProductId,
+            WarehouseId = dto.WarehouseId,
+            Quantity = dto.Quantity,
+            LastUpdatedAt = DateTime.UtcNow
+        };
 
-        var updated = await _stockHandler.UpdateAsync(stock);
+        var updated = await _stockHandler.UpdateAsync(id, stockToUpdate);
         if (updated == null) return NotFound();
 
         return Ok(updated);

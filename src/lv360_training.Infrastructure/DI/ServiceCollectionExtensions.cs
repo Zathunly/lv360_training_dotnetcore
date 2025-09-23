@@ -8,6 +8,8 @@ using lv360_training.Infrastructure.Repositories.Catalog;
 using lv360_training.Infrastructure.Security;
 using Microsoft.Extensions.DependencyInjection;
 using lv360_training.Domain.Entities;
+using System.Runtime.CompilerServices;
+using lv360_training.Infrastructure.Repositories;
 
 namespace lv360_training.Infrastructure
 {
@@ -20,9 +22,12 @@ namespace lv360_training.Infrastructure
             services.AddScoped<IUserRoleRepository, UserRoleRepository>();
             services.AddScoped<ISessionRepository, SessionRepository>();
             services.AddScoped<IPermissionRepository, PermissionRepository>();
-            services.AddScoped<ICatalogRepository<Category>, CatalogRepository<Category>>();
-            services.AddScoped<ICatalogRepository<Product>, CatalogRepository<Product>>();
-            services.AddScoped<ICatalogRepository<Stock>, CatalogRepository<Stock>>();
+            services.AddScoped<IBasedCatalogRepository<Category>, BasedCatalogRepository<Category>>();
+            services.AddScoped<IBasedCatalogRepository<Product>, BasedCatalogRepository<Product>>();
+            services.AddScoped<IBasedCatalogRepository<Warehouse>, BasedCatalogRepository<Warehouse>>();
+            services.AddScoped<IBasedCatalogRepository<Stock>, StockRepository>();
+            services.AddScoped<IBasedCatalogRepository<Order>, OrderRepository>();
+
             services.AddScoped<IPasswordService, PasswordService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

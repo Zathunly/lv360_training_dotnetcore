@@ -6,10 +6,10 @@ namespace lv360_training.Application.Handlers;
 
 public class StockHandler
 {
-    private readonly ICatalogRepository<Stock> _stockRepository;
+    private readonly IBasedCatalogRepository<Stock> _stockRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public StockHandler(ICatalogRepository<Stock> stockRepository, IUnitOfWork unitOfWork)
+    public StockHandler(IBasedCatalogRepository<Stock> stockRepository, IUnitOfWork unitOfWork)
     {
         _stockRepository = stockRepository;
         _unitOfWork = unitOfWork;
@@ -23,19 +23,23 @@ public class StockHandler
 
     public async Task<Stock> CreateAsync(Stock stock)
     {
+        stock.LastUpdatedAt = DateTime.UtcNow;
+
         await _stockRepository.AddAsync(stock);
         await _unitOfWork.SaveChangesAsync();
+
         return stock;
     }
 
-    public async Task<Stock?> UpdateAsync(Stock stock)
+    public async Task<Stock?> UpdateAsync(int id, Stock stock)
     {
-        var existing = await _stockRepository.GetByIdAsync(stock.Id);
+        var existing = await _stockRepository.GetByIdAsync(id);
         if (existing == null) return null;
 
+        existing.Quantity = stock.Quantity;
         existing.ProductId = stock.ProductId;
         existing.WarehouseId = stock.WarehouseId;
-        existing.Quantity = stock.Quantity;
+        existing.LastUpdatedAt = DateTime.UtcNow;
 
         _stockRepository.Update(existing);
         await _unitOfWork.SaveChangesAsync();

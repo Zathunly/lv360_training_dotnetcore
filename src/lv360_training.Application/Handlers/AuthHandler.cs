@@ -1,4 +1,4 @@
-using lv360_training.Api.Dtos.Auth;
+using lv360_training.Api.Dtos.Auth.Request;
 using lv360_training.Domain.Interfaces.Repositories.Core;
 using lv360_training.Domain.Interfaces.Repositories.Auth;
 using lv360_training.Domain.Interfaces.Security;

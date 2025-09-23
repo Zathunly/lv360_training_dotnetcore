@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using lv360_training.Application.Handlers;
-using lv360_training.Api.Dtos.Auth;
+using lv360_training.Api.Dtos.Auth.Request;
 using lv360_training.Application.Enums;
 using lv360_training.Infrastructure.Utils;
 using Microsoft.AspNetCore.Authentication;
@@ -43,10 +43,10 @@ public class AuthController : ControllerBase
         // --- Create DB session ---
         var session = await _authHandler.CreateSessionAsync(user);
 
-        // --- Create ClaimsPrincipal using helper ---
+        // Create ClaimsPrincipal using helper
         var principal = ClaimsHelper.CreateClaimsPrincipal(user, session);
 
-        // --- Sign in ---
+        // Sign in
         await HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
             principal,
@@ -57,7 +57,7 @@ public class AuthController : ControllerBase
             }
         );
 
-        // --- Return response ---
+        // Return response 
         var roles = user.UserRoles?.Select(ur => ur.Role.Name).ToList() ?? new List<string>();
         return Ok(new 
         { 

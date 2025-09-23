@@ -1,5 +1,5 @@
 using lv360_training.Application.Handlers;
-using lv360_training.Application.Dtos.Catalog;
+using lv360_training.Application.Dtos.Catalog.Request;
 using lv360_training.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

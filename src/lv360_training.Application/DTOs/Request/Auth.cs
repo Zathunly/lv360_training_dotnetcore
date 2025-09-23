@@ -1,4 +1,4 @@
-namespace lv360_training.Api.Dtos.Auth;
+namespace lv360_training.Api.Dtos.Auth.Request;
 
 public class RegisterRequest
 {

@@ -59,11 +59,9 @@ public class AppDbContext : DbContext
             .WithMany(u => u.Sessions)
             .HasForeignKey(s => s.UserId);
 
-        modelBuilder.Entity<Product>(entity =>
-        {
-            entity.Property(p => p.Price)
-                .HasColumnType("decimal(18,2)"); 
-        });
+        modelBuilder.Entity<Product>()
+            .Property(p => p.Price)
+            .HasColumnType("decimal(18,2)");
 
         modelBuilder.Entity<Category>()
             .HasMany(c => c.Products)
@@ -94,9 +92,5 @@ public class AppDbContext : DbContext
             .HasOne(s => s.Warehouse)
             .WithMany(w => w.Stocks)
             .HasForeignKey(s => s.WarehouseId);
-
-        modelBuilder.Entity<Product>()
-            .Property(p => p.Price)
-            .HasColumnType("decimal(18,2)");
     }
 }

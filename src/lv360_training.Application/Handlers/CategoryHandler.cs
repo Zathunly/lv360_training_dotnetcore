@@ -6,10 +6,10 @@ namespace lv360_training.Application.Handlers;
 
 public class CategoryHandler
 {
-    private readonly ICatalogRepository<Category> _categoryRepository;
+    private readonly IBasedCatalogRepository<Category> _categoryRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public CategoryHandler(ICatalogRepository<Category> categoryRepository, IUnitOfWork unitOfWork)
+    public CategoryHandler(IBasedCatalogRepository<Category> categoryRepository, IUnitOfWork unitOfWork)
     {
         _categoryRepository = categoryRepository;
         _unitOfWork = unitOfWork;
