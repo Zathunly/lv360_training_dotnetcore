@@ -62,6 +62,7 @@ if (app.Environment.IsDevelopment())
 
 // --- Middleware ---
 app.UseRouting();
+app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseAuthentication();  
 app.UseAuthorization();
 app.UseSession();

@@ -25,9 +25,8 @@ namespace lv360_training.Infrastructure
             services.AddScoped<IBasedCatalogRepository<Category>, BasedCatalogRepository<Category>>();
             services.AddScoped<IBasedCatalogRepository<Product>, BasedCatalogRepository<Product>>();
             services.AddScoped<IBasedCatalogRepository<Warehouse>, BasedCatalogRepository<Warehouse>>();
-            services.AddScoped<IBasedCatalogRepository<Stock>, StockRepository>();
+            services.AddScoped<IStockRepository, StockRepository>();
             services.AddScoped<IBasedCatalogRepository<Order>, OrderRepository>();
-
             services.AddScoped<IPasswordService, PasswordService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

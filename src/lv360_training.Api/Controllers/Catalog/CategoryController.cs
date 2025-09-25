@@ -2,6 +2,8 @@ using lv360_training.Application.Handlers;
 using lv360_training.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using lv360_training.Application.Dtos.Catalog.Request;
+
 
 namespace lv360_training.Api.Controllers.Catalog;
 
@@ -36,23 +38,30 @@ public class CategoryController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Create(Category category)
+    public async Task<IActionResult> Create(CreateOrUpdateCategory dto)
     {
+        var category = new Category
+        {
+            Name = dto.Name
+        };
         var created = await _categoryHandler.CreateAsync(category);
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
     [HttpPut("{id:int}")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Update(int id, Category category)
+    public async Task<IActionResult> Update(int id, CreateOrUpdateCategory dto)
     {
-        if (id != category.Id) return BadRequest("ID mismatch");
+        var existing = await _categoryHandler.GetByIdAsync(id);
+        if (existing == null) return NotFound();
 
-        var updated = await _categoryHandler.UpdateAsync(category);
-        if (updated == null) return NotFound();
+        existing.Name = dto.Name;
+
+        var updated = await _categoryHandler.UpdateAsync(existing);
 
         return Ok(updated);
     }
+
 
     [HttpDelete("{id:int}")]
     [Authorize(Roles = "Admin")]

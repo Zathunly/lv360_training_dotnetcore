@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace lv360_training.Infrastructure.Repositories.Catalog;
 
-public class StockRepository : IBasedCatalogRepository<Stock>
+public class StockRepository : IStockRepository
 {
     private readonly AppDbContext _context;
 
@@ -25,6 +25,22 @@ public class StockRepository : IBasedCatalogRepository<Stock>
             .Include(s => s.Product)
             .Include(s => s.Warehouse)
             .ToListAsync();
+
+    public async Task<Stock?> GetByProductIdAsync(int productId)
+    {
+        return await _context.Stocks
+            .Include(s => s.Product)
+            .Include(s => s.Warehouse)
+            .FirstOrDefaultAsync(s => s.ProductId == productId);
+    }
+
+    public async Task<Stock?> GetByProductAndWarehouseAsync(int productId, int warehouseId)
+    {
+        return await _context.Stocks
+            .Include(s => s.Product)
+            .Include(s => s.Warehouse)
+            .FirstOrDefaultAsync(s => s.ProductId == productId && s.WarehouseId == warehouseId);
+    }
 
     public async Task AddAsync(Stock entity) =>
         await _context.Stocks.AddAsync(entity);

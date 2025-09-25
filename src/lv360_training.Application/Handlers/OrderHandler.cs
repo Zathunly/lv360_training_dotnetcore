@@ -6,11 +6,14 @@ namespace lv360_training.Application.Handlers;
 public class OrderHandler
 {
     private readonly IBasedCatalogRepository<Order> _orderRepository;
+    private readonly IStockRepository _stockRepository;
+
     private readonly IUnitOfWork _unitOfWork;
 
-    public OrderHandler(IBasedCatalogRepository<Order> orderRepository, IUnitOfWork unitOfWork)
+    public OrderHandler(IBasedCatalogRepository<Order> orderRepository, IStockRepository stockRepository, IUnitOfWork unitOfWork)
     {
         _orderRepository = orderRepository;
+        _stockRepository = stockRepository;
         _unitOfWork = unitOfWork;
     }
 
@@ -18,8 +21,27 @@ public class OrderHandler
     {
         ValidateOrderItems(order);
 
+        // Check and update stock for each order item
+        foreach (var item in order.OrderItems)
+        {
+            var stock = await _stockRepository.GetByProductIdAsync(item.ProductId);
+            if (stock == null)
+                throw new InvalidOperationException($"No stock found for product {item.ProductId}.");
+
+            if (stock.Quantity < item.Quantity)
+                throw new InvalidOperationException(
+                    $"Not enough stock for product {item.ProductId}. Available: {stock.Quantity}, requested: {item.Quantity}."
+                );
+
+            stock.Quantity -= item.Quantity;
+            _stockRepository.Update(stock);
+        }
+
+
         // Add order
         await _orderRepository.AddAsync(order);
+
+        // Save everything in one transaction
         await _unitOfWork.SaveChangesAsync();
 
         // Reload order including Products for DTO mapping
@@ -29,6 +51,7 @@ public class OrderHandler
 
         return createdOrder;
     }
+
 
     public async Task<Order?> GetByIdAsync(int id)
     {

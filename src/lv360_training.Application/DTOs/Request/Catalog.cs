@@ -26,6 +26,10 @@ public class CreateOrUpdateStockDto
     public int Quantity { get; set; }
 }
 
+public class CreateOrUpdateCategory
+{
+    public string Name { get; set; } = string.Empty;
+}
 //Order 
 /// </summary>
 public class PlaceOrderRequestDto

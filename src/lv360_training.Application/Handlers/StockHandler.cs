@@ -6,10 +6,10 @@ namespace lv360_training.Application.Handlers;
 
 public class StockHandler
 {
-    private readonly IBasedCatalogRepository<Stock> _stockRepository;
+    private readonly IStockRepository _stockRepository;
     private readonly IUnitOfWork _unitOfWork;
 
-    public StockHandler(IBasedCatalogRepository<Stock> stockRepository, IUnitOfWork unitOfWork)
+    public StockHandler(IStockRepository stockRepository, IUnitOfWork unitOfWork)
     {
         _stockRepository = stockRepository;
         _unitOfWork = unitOfWork;

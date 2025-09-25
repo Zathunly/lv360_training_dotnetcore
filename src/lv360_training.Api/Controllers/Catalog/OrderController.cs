@@ -45,7 +45,6 @@ public class OrderController : ControllerBase
     {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        // Map DTO -> Order entity
         var order = new Order
         {
             UserId = userId,
@@ -56,7 +55,6 @@ public class OrderController : ControllerBase
             }).ToList()
         };
 
-        // Place order via handler (handles validation, unit price, stock, etc.)
         var createdOrder = await _orderHandler.PlaceOrder(order);
 
         // Inline mapping to DTO for response
