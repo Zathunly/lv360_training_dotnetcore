@@ -2,8 +2,7 @@ using lv360_training.Application.Handlers;
 using lv360_training.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using lv360_training.Application.Dtos.Catalog.Request;
-
+using lv360_training.Domain.Dtos.Catalog.Request;
 
 namespace lv360_training.Api.Controllers.Catalog;
 
@@ -44,6 +43,7 @@ public class CategoryController : ControllerBase
         {
             Name = dto.Name
         };
+
         var created = await _categoryHandler.CreateAsync(category);
         return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
@@ -61,6 +61,7 @@ public class CategoryController : ControllerBase
 
         return Ok(updated);
     }
+
 
 
     [HttpDelete("{id:int}")]

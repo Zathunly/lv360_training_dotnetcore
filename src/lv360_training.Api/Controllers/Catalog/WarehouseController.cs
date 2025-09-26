@@ -1,6 +1,6 @@
 using lv360_training.Application.Handlers;
 using lv360_training.Domain.Entities;
-using lv360_training.Application.Dtos.Catalog.Request;
+using lv360_training.Domain.Dtos.Catalog.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

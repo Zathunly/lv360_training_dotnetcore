@@ -14,6 +14,13 @@ public class RoleRepository : IRoleRepository
         _context = context;
     }
 
+    public async Task RemoveUserRoleAsync(int userId)
+    {
+        var userRole = await _context.UserRoles.FirstOrDefaultAsync(ur => ur.UserId == userId);
+        if (userRole != null)
+            _context.UserRoles.Remove(userRole);
+    }
+
     public async Task<Role?> GetByNameAsync(string roleName) =>
         await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
 

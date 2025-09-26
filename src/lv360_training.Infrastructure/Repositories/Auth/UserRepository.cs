@@ -14,6 +14,22 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
+    public async Task<User?> GetByIdAsync(int userId) =>
+        await _context.Users
+            .Include(u => u.UserRoles)
+            .ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+
+    public async Task<Role?> GetRoleByUserIdAsync(int userId)
+    {
+        return await _context.UserRoles
+            .Where(ur => ur.UserId == userId)
+            .Include(ur => ur.Role)
+            .Select(ur => ur.Role)
+            .FirstOrDefaultAsync(); 
+    }
+
     public async Task<User?> GetByUsernameAsync(string username) =>
         await _context.Users
             .Include(u => u.UserRoles)

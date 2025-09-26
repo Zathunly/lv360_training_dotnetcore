@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using lv360_training.Domain.Entities;
 
-namespace lv360_training.Application.Dtos.Catalog.Response;
+namespace lv360_training.Domain.Dtos.Catalog.Response;
 
 public class OrderSuccessDto
 {

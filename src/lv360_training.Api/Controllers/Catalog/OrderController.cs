@@ -1,7 +1,7 @@
 using lv360_training.Application.Handlers;
 using lv360_training.Domain.Entities;
-using lv360_training.Application.Dtos.Catalog.Request;
-using lv360_training.Application.Dtos.Catalog.Response;
+using lv360_training.Domain.Dtos.Catalog.Request;
+using lv360_training.Domain.Dtos.Catalog.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc; 
 using System.Security.Claims;
@@ -39,7 +39,7 @@ public class OrderController : ControllerBase
     }
 
 
-    [HttpPost]
+    [HttpPost("placer-order")]
     [Authorize(Roles = "User")]
     public async Task<IActionResult> PlaceOrder([FromBody] PlaceOrderRequestDto dto)
     {

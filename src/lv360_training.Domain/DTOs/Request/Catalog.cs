@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using lv360_training.Domain.Entities;
 
-namespace lv360_training.Application.Dtos.Catalog.Request;
+namespace lv360_training.Domain.Dtos.Catalog.Request;
 
 // Product
 public class CreateProductDto
