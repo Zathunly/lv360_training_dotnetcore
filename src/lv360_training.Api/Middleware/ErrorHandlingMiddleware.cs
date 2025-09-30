@@ -1,10 +1,5 @@
 using System.Net;
 using System.Text.Json;
-<<<<<<< HEAD
-using Microsoft.AspNetCore.Http;
-using Microsoft.Data.SqlClient; // optional, for DB exceptions
-=======
->>>>>>> 76414fe (Move DTOs + Enums to Domain)
 
 public class ErrorHandlingMiddleware
 {
@@ -17,13 +12,14 @@ public class ErrorHandlingMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
+        if (context.Request.Method == HttpMethods.Options)
+        {
+            context.Response.StatusCode = StatusCodes.Status204NoContent;
+            return;
+        }
         try
         {
-<<<<<<< HEAD
-            await _next(context); // Call next middleware
-=======
-            await _next(context); 
->>>>>>> 76414fe (Move DTOs + Enums to Domain)
+            await _next(context);
         }
         catch (Exception ex)
         {
@@ -38,15 +34,7 @@ public class ErrorHandlingMiddleware
 
         switch (exception)
         {
-<<<<<<< HEAD
-            case SqlException: // DB exceptions
-                status = HttpStatusCode.InternalServerError;
-                message = "A database error occurred.";
-                break;
-            case KeyNotFoundException: // Not found
-=======
             case KeyNotFoundException:
->>>>>>> 76414fe (Move DTOs + Enums to Domain)
                 status = HttpStatusCode.NotFound;
                 message = exception.Message;
                 break;

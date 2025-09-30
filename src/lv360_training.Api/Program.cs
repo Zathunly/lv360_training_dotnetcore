@@ -43,8 +43,24 @@ builder.Services.AddApplicationServices();
 
 // --- Add Controllers ---
 builder.Services.AddControllers();
+
+// -- Add CORS ---
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200") 
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); 
+    });
+});
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 // --- Build App ---
 var app = builder.Build();
@@ -62,6 +78,7 @@ if (app.Environment.IsDevelopment())
 
 // --- Middleware ---
 app.UseRouting();
+app.UseCors("AllowFrontend"); 
 app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseAuthentication();  
 app.UseAuthorization();

@@ -86,6 +86,15 @@ public class AuthHandler
         return session is { ExpiresAt: var exp } && exp > DateTime.UtcNow;
     }
 
+    public async Task<User?> GetUserFromClaimsAsync(ClaimsPrincipal principal)
+    {
+        var userIdClaim = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            return null;
+
+        return await _users.GetByIdAsync(userId);
+    }
+    
     public async Task<Session> CreateSessionAsync(User user)
     {
         var session = new Session
