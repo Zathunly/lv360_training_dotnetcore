@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using lv360_training.Domain.Entities;
 using System.Runtime.CompilerServices;
 using lv360_training.Infrastructure.Repositories;
+using lv360_training.Domain.Services.Redis;
+using lv360_training.Infrastructure.Services.Redis;
 
 namespace lv360_training.Infrastructure
 {
@@ -20,7 +22,7 @@ namespace lv360_training.Infrastructure
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IUserRoleRepository, UserRoleRepository>();
-            services.AddScoped<ISessionRepository, SessionRepository>();
+            services.AddScoped<IRedisSessionService, RedisSessionService>();
             services.AddScoped<IPermissionRepository, PermissionRepository>();
             services.AddScoped<IBasedCatalogRepository<Category>, BasedCatalogRepository<Category>>();
             services.AddScoped<IBasedCatalogRepository<Product>, BasedCatalogRepository<Product>>();

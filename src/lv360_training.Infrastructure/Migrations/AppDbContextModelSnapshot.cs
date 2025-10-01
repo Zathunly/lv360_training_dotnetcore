@@ -177,28 +177,6 @@ namespace lv360_training.Infrastructure.Migrations
                     b.ToTable("RolePermissions");
                 });
 
-            modelBuilder.Entity("lv360_training.Domain.Entities.Session", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Sessions");
-                });
-
             modelBuilder.Entity("lv360_training.Domain.Entities.Stock", b =>
                 {
                     b.Property<int>("Id")
@@ -349,17 +327,6 @@ namespace lv360_training.Infrastructure.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("lv360_training.Domain.Entities.Session", b =>
-                {
-                    b.HasOne("lv360_training.Domain.Entities.User", "User")
-                        .WithMany("Sessions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("lv360_training.Domain.Entities.Stock", b =>
                 {
                     b.HasOne("lv360_training.Domain.Entities.Product", "Product")
@@ -423,8 +390,6 @@ namespace lv360_training.Infrastructure.Migrations
             modelBuilder.Entity("lv360_training.Domain.Entities.User", b =>
                 {
                     b.Navigation("Orders");
-
-                    b.Navigation("Sessions");
 
                     b.Navigation("UserRoles");
                 });

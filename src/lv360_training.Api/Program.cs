@@ -1,4 +1,3 @@
-using lv360_training.Application.Handlers;
 using lv360_training.Application;
 using lv360_training.Infrastructure;
 using lv360_training.Infrastructure.Persistence;
@@ -14,6 +13,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         new MySqlServerVersion(new Version(8, 0, 33))
     )
 );
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetValue<string>("Redis:ConnectionString");
+    options.InstanceName = builder.Configuration.GetValue<string>("Redis:InstanceName");
+});
 
 // Add authentication with cookies
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

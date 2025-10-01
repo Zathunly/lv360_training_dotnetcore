@@ -13,7 +13,6 @@ public class AppDbContext : DbContext
     public DbSet<Permission> Permissions => Set<Permission>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
-    public DbSet<Session> Sessions => Set<Session>();
 
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Category> Categories => Set<Category>();
@@ -53,11 +52,6 @@ public class AppDbContext : DbContext
             .HasOne(rp => rp.Permission)
             .WithMany(p => p.RolePermissions)
             .HasForeignKey(rp => rp.PermissionId);
-
-        modelBuilder.Entity<Session>()
-            .HasOne(s => s.User)
-            .WithMany(u => u.Sessions)
-            .HasForeignKey(s => s.UserId);
 
         modelBuilder.Entity<Product>()
             .Property(p => p.Price)

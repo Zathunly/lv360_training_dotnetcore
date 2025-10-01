@@ -29,7 +29,17 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
+  redis:
+    image: redis:7.0
+    container_name: lv360_training_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
 volumes:
   db_data:
+  redis_data:
   api_obj:
   api_bin:

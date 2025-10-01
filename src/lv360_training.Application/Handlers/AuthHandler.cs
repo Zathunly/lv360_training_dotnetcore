@@ -4,6 +4,7 @@ using lv360_training.Domain.Interfaces.Repositories.Auth;
 using lv360_training.Domain.Interfaces.Security;
 using lv360_training.Domain.Entities;
 using System.Security.Claims;
+using lv360_training.Domain.Services.Redis;
 
 namespace lv360_training.Application.Handlers;
 
@@ -12,7 +13,7 @@ public class AuthHandler
     private readonly IUserRepository _users;
     private readonly IRoleRepository _roles;
     private readonly IUserRoleRepository _userRoles;
-    private readonly ISessionRepository _sessions;
+    private readonly IRedisSessionService _sessions;
     private readonly IUnitOfWork _uow;
     private readonly IPasswordService _hasher;
 
@@ -20,7 +21,7 @@ public class AuthHandler
         IUserRepository users,
         IRoleRepository roles,
         IUserRoleRepository userRoles,
-        ISessionRepository sessions,
+        IRedisSessionService sessions,
         IUnitOfWork uow,
         IPasswordService hasher)
     {
@@ -77,13 +78,14 @@ public class AuthHandler
 
     public async Task<bool> ValidateSessionAsync(ClaimsPrincipal principal)
     {
-        var sessionIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "SessionId")?.Value;
-        if (sessionIdClaim == null || !Guid.TryParse(sessionIdClaim, out var sessionId))
+        var sessionId = principal.Claims.FirstOrDefault(c => c.Type == "SessionId")?.Value;
+        if (string.IsNullOrEmpty(sessionId)) return false;
+
+        var session = await _sessions.GetSessionAsync(sessionId);
+        if (session == null || session.ExpiresAt <= DateTime.UtcNow)
             return false;
 
-        var session = await _sessions.GetByIdAsync(sessionId);
-
-        return session is { ExpiresAt: var exp } && exp > DateTime.UtcNow;
+        return true;
     }
 
     public async Task<User?> GetUserFromClaimsAsync(ClaimsPrincipal principal)
@@ -94,31 +96,33 @@ public class AuthHandler
 
         return await _users.GetByIdAsync(userId);
     }
-    
-    public async Task<Session> CreateSessionAsync(User user)
+
+    public async Task<(string SessionId, RedisSession Session)> CreateSessionAsync(User user)
     {
-        var session = new Session
+        var sessionId = Guid.NewGuid().ToString();
+
+        var redisSession = new RedisSession
         {
             UserId = user.Id,
-            ExpiresAt = DateTime.UtcNow.AddHours(1),
-            CreatedAt = DateTime.UtcNow
+            Username = user.Username,
+            Roles = user.UserRoles.Select(r => r.Role.Name).ToList(),
+            ExpiresAt = DateTime.UtcNow.AddHours(1)
         };
 
-        await _sessions.AddAsync(session);
-        await _uow.SaveChangesAsync();
+        // Redis handles single-session-per-user internally
+        await _sessions.CreateSessionAsync(sessionId, redisSession, TimeSpan.FromHours(2));
 
-        return session;
+        return (sessionId, redisSession);
     }
+
 
     public async Task LogoutUserAsync(ClaimsPrincipal principal)
     {
-        var sessionIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "SessionId")?.Value;
-        if (sessionIdClaim == null) return;
-
-        if (Guid.TryParse(sessionIdClaim, out var sessionId))
+        var sessionId = principal.Claims.FirstOrDefault(c => c.Type == "SessionId")?.Value;
+        if (!string.IsNullOrEmpty(sessionId))
         {
-            await _sessions.DeleteAsync(sessionId);
-            await _uow.SaveChangesAsync();
+            await _sessions.DeleteSessionAsync(sessionId);
         }
     }
+
 }
