@@ -101,20 +101,21 @@ public class AuthHandler
     {
         var sessionId = Guid.NewGuid().ToString();
 
+        var ttl = _sessions.Ttl;  
+
         var redisSession = new RedisSession
         {
             UserId = user.Id,
             Username = user.Username,
             Roles = user.UserRoles.Select(r => r.Role.Name).ToList(),
-            ExpiresAt = DateTime.UtcNow.AddHours(1)
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow.Add(ttl),
         };
 
-        // Redis handles single-session-per-user internally
-        await _sessions.CreateSessionAsync(sessionId, redisSession, TimeSpan.FromHours(2));
+        await _sessions.CreateSessionAsync(sessionId, redisSession, ttl);
 
         return (sessionId, redisSession);
     }
-
 
     public async Task LogoutUserAsync(ClaimsPrincipal principal)
     {

@@ -18,7 +18,6 @@ public class UserRoleRepository : IUserRoleRepository
     public async Task AddAsync(UserRole userRole)
     {
         await _context.UserRoles.AddAsync(userRole);
-        // save is handled by IUnitOfWork
     }
 
     public async Task<UserRole?> GetAsync(int userId, int roleId)

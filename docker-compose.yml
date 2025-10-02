@@ -12,6 +12,8 @@ services:
       - api_bin:/app/lv360_training.Api/bin
     working_dir: /app/lv360_training.Api
     environment:
+      - REDIS_TTL_SECONDS=30000
+      - REDIS_THRESHOLD_SECONDS=1000
       - DOTNET_USE_POLLING_FILE_WATCHER=1
       - DOTNET_RUNNING_IN_CONTAINER=true
       - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false

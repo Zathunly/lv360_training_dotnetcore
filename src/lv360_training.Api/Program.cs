@@ -33,7 +33,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 // --- Add session ---
-builder.Services.AddDistributedMemoryCache(); 
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromHours(1);
@@ -83,12 +82,13 @@ if (app.Environment.IsDevelopment())
 
 // --- Middleware ---
 app.UseRouting();
-app.UseCors("AllowFrontend"); 
+app.UseCors("AllowFrontend");
 app.UseMiddleware<ErrorHandlingMiddleware>();
-app.UseAuthentication();  
+app.UseAuthentication();         
+app.UseMiddleware<SessionRenewMiddleware>(); 
 app.UseAuthorization();
 app.UseSession();
-app.MapControllers();   
+app.MapControllers();
 
 // --- Run App ---
 app.Run();

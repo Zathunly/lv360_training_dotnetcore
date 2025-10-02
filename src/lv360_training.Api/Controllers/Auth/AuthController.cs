@@ -42,11 +42,9 @@ public class AuthController : ControllerBase
         if (user == null)
             return Unauthorized(new { error = "Invalid credentials" });
 
-        // Generate a sessionId and create Redis session
         var (sessionId, session) = await _authHandler.CreateSessionAsync(user);
         var principal = ClaimsHelper.CreateClaimsPrincipal(user, sessionId, session);
 
-        // Sign in cookie
         await HttpContext.SignInAsync(
             CookieAuthenticationDefaults.AuthenticationScheme,
             principal,

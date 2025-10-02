@@ -1,6 +1,7 @@
 using lv360_training.Domain.Entities;
 using lv360_training.Domain.Interfaces.Repositories.Catalog;
 using lv360_training.Domain.Interfaces.Repositories.Core;
+
 namespace lv360_training.Application.Handlers;
 
 public class OrderHandler
