@@ -7,4 +7,8 @@ public interface IBasedCatalogRepository<T> where T : class
     Task AddAsync(T entity);
     void Update(T entity);
     void Delete(T entity);
+
+    Task AddRangeAsync(IEnumerable<T> entities);
+    void UpdateRange(IEnumerable<T> entities);
+    void DeleteRange(IEnumerable<T> entities);
 }

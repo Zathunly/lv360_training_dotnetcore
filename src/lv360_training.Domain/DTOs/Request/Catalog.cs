@@ -4,7 +4,7 @@ using lv360_training.Domain.Entities;
 namespace lv360_training.Domain.Dtos.Catalog.Request;
 
 // Product
-public class CreateProductDto
+public class CreateOrUpdateProductDto
 {
     [Required]
     public string Name { get; set; } = string.Empty;
@@ -17,6 +17,24 @@ public class CreateProductDto
     [Required]
     public int CategoryId { get; set; }
 }
+
+public class UpdateProductBulkDto
+{
+    [Required]
+    public int Id { get; set; } 
+
+    [Required]
+    public string Name { get; set; } = string.Empty;
+
+    public string? Description { get; set; }
+
+    [Required]
+    public decimal Price { get; set; }
+
+    [Required]
+    public int CategoryId { get; set; }
+}
+
 
 // Stock
 public class CreateOrUpdateStockDto

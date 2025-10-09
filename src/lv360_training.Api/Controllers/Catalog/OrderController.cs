@@ -67,7 +67,7 @@ public class OrderController : ControllerBase
             Items = createdOrder.OrderItems.Select(oi => new OrderItemDto
             {
                 ProductId = oi.ProductId,
-                ProductName = oi.Product.Name, 
+                ProductName = oi.Product.Name,
                 Quantity = oi.Quantity,
                 UnitPrice = oi.UnitPrice
             }).ToList()
@@ -109,7 +109,7 @@ public class OrderController : ControllerBase
                 Items = updatedOrder.OrderItems.Select(oi => new OrderItemDto
                 {
                     ProductId = oi.ProductId,
-                    ProductName = oi.Product.Name, 
+                    ProductName = oi.Product.Name,
                     Quantity = oi.Quantity,
                     UnitPrice = oi.UnitPrice
                 }).ToList()
@@ -131,4 +131,21 @@ public class OrderController : ControllerBase
         if (!deleted) return NotFound();
         return NoContent();
     }
+    
+    [HttpPut("bulk")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateBulk([FromBody] IEnumerable<Order> orders)
+    {
+        var result = await _orderHandler.UpdateBulkAsync(orders);
+        return Ok(result);
+    }
+
+    [HttpDelete("bulk")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteBulk([FromBody] IEnumerable<int> ids)
+    {
+        var deletedCount = await _orderHandler.DeleteBulkAsync(ids);
+        return Ok(new { Deleted = deletedCount });
+    }
 }
+    

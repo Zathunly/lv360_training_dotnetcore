@@ -83,6 +83,66 @@ public class OrderHandler
         return true;
     }
 
+
+    public async Task<IEnumerable<Order>> CreateBulkAsync(IEnumerable<Order> orders)
+    {
+        foreach (var order in orders)
+        {
+            foreach (var item in order.OrderItems)
+            {
+                if (item.Quantity <= 0)
+                    throw new InvalidOperationException($"Invalid quantity for product {item.ProductId}.");
+            }
+
+            order.OrderDate = DateTime.UtcNow;
+            order.Status = OrderStatus.Pending;
+        }
+
+        await _orderRepository.AddRangeAsync(orders);
+        await _unitOfWork.SaveChangesAsync();
+
+        return orders;
+    }
+
+    public async Task<IEnumerable<Order>> UpdateBulkAsync(IEnumerable<Order> orders)
+    {
+        var ids = orders.Select(o => o.Id).ToList();
+        var existingOrders = (await _orderRepository.GetAllAsync())
+            .Where(o => ids.Contains(o.Id))
+            .ToDictionary(o => o.Id);
+
+        var toUpdate = new List<Order>();
+
+        foreach (var order in orders)
+        {
+            if (existingOrders.TryGetValue(order.Id, out var existing))
+            {
+                existing.Status = order.Status;
+                existing.OrderItems = order.OrderItems;
+                toUpdate.Add(existing);
+            }
+        }
+
+        _orderRepository.UpdateRange(toUpdate);
+        await _unitOfWork.SaveChangesAsync();
+
+        return toUpdate;
+    }
+
+    public async Task<int> DeleteBulkAsync(IEnumerable<int> ids)
+    {
+        var orders = (await _orderRepository.GetAllAsync())
+            .Where(o => ids.Contains(o.Id))
+            .ToList();
+
+        if (!orders.Any()) return 0;
+
+        _orderRepository.DeleteRange(orders);
+        await _unitOfWork.SaveChangesAsync();
+
+        return orders.Count;
+    }
+
     // --- Private Helper ---
     /// <summary>
     /// Validate order items: Quantity must be > 0

@@ -50,4 +50,14 @@ public class StockRepository : IStockRepository
 
     public void Delete(Stock entity) =>
         _context.Stocks.Remove(entity);
+
+    public async Task AddRangeAsync(IEnumerable<Stock> entities) =>
+        await _context.Stocks.AddRangeAsync(entities);
+
+    public void UpdateRange(IEnumerable<Stock> entities) =>
+        _context.Stocks.UpdateRange(entities);
+
+    public void DeleteRange(IEnumerable<Stock> entities) =>
+        _context.Stocks.RemoveRange(entities);
+
 }

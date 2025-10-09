@@ -27,4 +27,13 @@ public class BasedCatalogRepository<T> : IBasedCatalogRepository<T> where T : cl
 
     public void Delete(T entity) =>
         _context.Set<T>().Remove(entity);
+
+    public async Task AddRangeAsync(IEnumerable<T> entities) =>
+        await _context.Set<T>().AddRangeAsync(entities);
+
+    public void UpdateRange(IEnumerable<T> entities) =>
+        _context.Set<T>().UpdateRange(entities);
+
+    public void DeleteRange(IEnumerable<T> entities) =>
+        _context.Set<T>().RemoveRange(entities);
 }

@@ -8,7 +8,7 @@ namespace lv360_training.Api.Controllers.Catalog;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize] 
+[Authorize]
 public class ProductController : ControllerBase
 {
     private readonly ProductHandler _productHandler;
@@ -37,7 +37,7 @@ public class ProductController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Create(CreateProductDto dto)
+    public async Task<IActionResult> Create(CreateOrUpdateProductDto dto)
     {
         var product = new Product
         {
@@ -55,15 +55,24 @@ public class ProductController : ControllerBase
 
     [HttpPut("{id:int}")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Update(int id, Product product)
+    public async Task<IActionResult> Update(int id, [FromBody] CreateOrUpdateProductDto dto)
     {
-        if (id != product.Id) return BadRequest("ID mismatch");
+        var product = new Product
+        {
+            Id = id,
+            Name = dto.Name,
+            Description = dto.Description,
+            Price = dto.Price,
+            CategoryId = dto.CategoryId
+        };
 
         var updated = await _productHandler.UpdateAsync(product);
+
         if (updated == null) return NotFound();
 
         return Ok(updated);
     }
+
 
     [HttpDelete("{id:int}")]
     [Authorize(Roles = "Admin")]
@@ -73,5 +82,48 @@ public class ProductController : ControllerBase
         if (!deleted) return NotFound();
 
         return NoContent();
+    }
+
+    [HttpPost("bulk")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> CreateBulk([FromBody] IEnumerable<CreateOrUpdateProductDto> dtos)
+    {
+        var products = dtos.Select(dto => new Product
+        {
+            Name = dto.Name,
+            Description = dto.Description,
+            Price = dto.Price,
+            CategoryId = dto.CategoryId
+        }).ToList();
+
+        var created = await _productHandler.CreateBulkAsync(products);
+        return Ok(created);
+    }
+
+    [HttpPut("bulk")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateBulk([FromBody] IEnumerable<UpdateProductBulkDto> dtos)
+    {
+        var products = dtos.Select(dto => new Product
+        {
+            Id = dto.Id, 
+            Name = dto.Name,
+            Description = dto.Description,
+            Price = dto.Price,
+            CategoryId = dto.CategoryId,
+            UpdatedAt = DateTime.UtcNow
+        }).ToList();
+
+        var updated = await _productHandler.UpdateBulkAsync(products);
+
+        return Ok(updated);
+    }
+
+    [HttpDelete("bulk")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteBulk([FromBody] IEnumerable<int> ids)
+    {
+        var count = await _productHandler.DeleteBulkAsync(ids);
+        return Ok(new { deletedCount = count });
     }
 }

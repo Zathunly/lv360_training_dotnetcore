@@ -80,4 +80,29 @@ public class StockController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpPost("bulk")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> CreateBulk([FromBody] IEnumerable<Stock> stocks)
+    {
+        var created = await _stockHandler.CreateBulkAsync(stocks);
+        return Ok(created);
+    }
+
+    [HttpPut("bulk")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateBulk([FromBody] IEnumerable<Stock> stocks)
+    {
+        var updated = await _stockHandler.UpdateBulkAsync(stocks);
+        return Ok(updated);
+    }
+
+    [HttpDelete("bulk")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteBulk([FromBody] IEnumerable<int> ids)
+    {
+        var deletedCount = await _stockHandler.DeleteBulkAsync(ids);
+        return Ok(new { deletedCount });
+    }
+
 }

@@ -36,6 +36,30 @@ public class OrderRepository : IBasedCatalogRepository<Order>
         _context.SaveChanges();
     }
 
+    public async Task AddRangeAsync(IEnumerable<Order> entities)
+    {
+        foreach (var order in entities)
+            ValidateOrderItems(order);
+
+        await _context.Orders.AddRangeAsync(entities);
+        await _context.SaveChangesAsync();
+    }
+
+    public void UpdateRange(IEnumerable<Order> entities)
+    {
+        foreach (var order in entities)
+            ValidateOrderItems(order);
+
+        _context.Orders.UpdateRange(entities);
+        _context.SaveChanges();
+    }
+
+    public void DeleteRange(IEnumerable<Order> entities)
+    {
+        _context.Orders.RemoveRange(entities);
+        _context.SaveChanges();
+    }
+
     public async Task<Order?> GetByIdAsync(int id)
     {
         return await _context.Orders

@@ -58,4 +58,62 @@ public class ProductHandler
 
         return true;
     }
+
+    public async Task<IEnumerable<Product>> CreateBulkAsync(IEnumerable<Product> products)
+    {
+        var utcNow = DateTime.UtcNow;
+        foreach (var p in products)
+        {
+            p.CreatedAt = utcNow;
+            p.UpdatedAt = utcNow;
+        }
+
+        await _productRepository.AddRangeAsync(products);
+        await _unitOfWork.SaveChangesAsync();
+
+        return products;
+    }
+
+    public async Task<IEnumerable<Product>> UpdateBulkAsync(IEnumerable<Product> products)
+    {
+        var ids = products.Select(p => p.Id).ToList();
+        var existingProducts = (await _productRepository.GetAllAsync())
+            .Where(p => ids.Contains(p.Id))
+            .ToDictionary(p => p.Id);
+
+        var utcNow = DateTime.UtcNow;
+        var toUpdate = new List<Product>();
+
+        foreach (var product in products)
+        {
+            if (existingProducts.TryGetValue(product.Id, out var existing))
+            {
+                existing.Name = product.Name;
+                existing.Description = product.Description;
+                existing.Price = product.Price;
+                existing.UpdatedAt = utcNow;
+
+                toUpdate.Add(existing);
+            }
+        }
+
+        _productRepository.UpdateRange(toUpdate);
+        await _unitOfWork.SaveChangesAsync();
+
+        return toUpdate;
+    }
+
+    public async Task<int> DeleteBulkAsync(IEnumerable<int> ids)
+    {
+        var products = (await _productRepository.GetAllAsync())
+            .Where(p => ids.Contains(p.Id))
+            .ToList();
+
+        if (!products.Any()) return 0;
+
+        _productRepository.DeleteRange(products);
+        await _unitOfWork.SaveChangesAsync();
+
+        return products.Count;
+    }
 }
