@@ -58,8 +58,6 @@ public class StockHandler
         return true;
     }
 
-    // ✅ StockHandler bulk operations
-
     public async Task<IEnumerable<Stock>> CreateBulkAsync(IEnumerable<Stock> stocks)
     {
         var utcNow = DateTime.UtcNow;
@@ -74,9 +72,10 @@ public class StockHandler
 
     public async Task<IEnumerable<Stock>> UpdateBulkAsync(IEnumerable<Stock> stocks)
     {
-        var ids = stocks.Select(s => s.Id).ToList();
-        var existingStocks = (await _stockRepository.GetAllAsync())
-            .Where(s => ids.Contains(s.Id))
+        var allStocks = await _stockRepository.GetAllAsync();
+
+        var existingStocks = allStocks
+            .Where(s => stocks.Select(st => st.Id).Contains(s.Id))
             .ToDictionary(s => s.Id);
 
         var utcNow = DateTime.UtcNow;
@@ -86,14 +85,17 @@ public class StockHandler
         {
             if (existingStocks.TryGetValue(stock.Id, out var existing))
             {
+                // Update chỉ scalar properties
                 existing.ProductId = stock.ProductId;
                 existing.WarehouseId = stock.WarehouseId;
                 existing.Quantity = stock.Quantity;
                 existing.LastUpdatedAt = utcNow;
+
                 toUpdate.Add(existing);
             }
         }
 
+        // Update trong EF Core
         _stockRepository.UpdateRange(toUpdate);
         await _unitOfWork.SaveChangesAsync();
 

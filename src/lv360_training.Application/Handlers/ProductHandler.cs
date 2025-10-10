@@ -92,6 +92,7 @@ public class ProductHandler
                 existing.Description = product.Description;
                 existing.Price = product.Price;
                 existing.UpdatedAt = utcNow;
+                existing.CategoryId = product.CategoryId; 
 
                 toUpdate.Add(existing);
             }

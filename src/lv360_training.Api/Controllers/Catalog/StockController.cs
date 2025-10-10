@@ -39,7 +39,6 @@ public class StockController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create(CreateOrUpdateStockDto dto)
     {
-        // Convert DTO to Stock entity
         var stock = new Stock
         {
             ProductId = dto.ProductId,
@@ -91,18 +90,22 @@ public class StockController : ControllerBase
 
     [HttpPut("bulk")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> UpdateBulk([FromBody] IEnumerable<Stock> stocks)
+    public async Task<IActionResult> UpdateBulk([FromBody] IEnumerable<UpdateStockBulkDto> dtos)
     {
+        if (dtos == null || !dtos.Any())
+            return BadRequest("No stocks provided.");
+
+        var stocks = dtos.Select(dto => new Stock
+        {
+            Id = dto.Id,
+            ProductId = dto.ProductId,
+            WarehouseId = dto.WarehouseId,
+            Quantity = dto.Quantity,
+            LastUpdatedAt = DateTime.UtcNow
+        }).ToList();
+
         var updated = await _stockHandler.UpdateBulkAsync(stocks);
+
         return Ok(updated);
     }
-
-    [HttpDelete("bulk")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> DeleteBulk([FromBody] IEnumerable<int> ids)
-    {
-        var deletedCount = await _stockHandler.DeleteBulkAsync(ids);
-        return Ok(new { deletedCount });
-    }
-
 }

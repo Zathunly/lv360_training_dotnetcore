@@ -48,6 +48,23 @@ public class CreateOrUpdateCategory
 {
     public string Name { get; set; } = string.Empty;
 }
+
+public class UpdateStockBulkDto
+{
+    [Required]
+    public int Id { get; set; }
+
+    [Required]
+    public int ProductId { get; set; }      
+
+    [Required]
+    public int WarehouseId { get; set; }   
+
+    [Required]
+    public int Quantity { get; set; }
+}
+
+
 //Order 
 /// </summary>
 public class PlaceOrderRequestDto
